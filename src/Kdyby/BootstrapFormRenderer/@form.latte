@@ -1,129 +1,130 @@
 {*
- * This file is part of the Kdyby (http://www.kdyby.org)
- *
- * Copyright (c) 2008 Filip Procházka (filip@prochazka.su)
- *
- * For the full copyright and license information, please view the file license.md that was distributed with this source code.
- *}
+* This file is part of the Kdyby (http://www.kdyby.org)
+*
+* Copyright (c) 2008 Filip Procházka (filip@prochazka.su)
+*
+* For the full copyright and license information, please view the file license.md that was distributed with this source code.
+*}
 
 {define #form}
 {form $form}
 {block #errors}
 
 <div n:foreach="$renderer->findErrors() as $error" class="alert alert-error">
-    <a class="close" data-dismiss="alert">×</a>{$error != ''}
+    <a class="close" data-dismiss="alert">×</a>{$error}
 </div>
 {/block}
 {block #body}
 {* controls with group *}
 {foreach $renderer->findGroups() as $group}{block #group}
 
-    <fieldset{!$group->attrs->attributes()}>
-        <legend n:if="$group->label">{$group->label}</legend>
-        <p n:if="$group->description">{$group->description != ''}</p>
+<fieldset{!$group->attrs->attributes()}>
+    <legend n:if="$group->label">{$group->label}</legend>
+    <p n:if="$group->description">{$group->description != ''}</p>
 
-        {var $controls = $group->controls}
-        {if isset($group->template) && $group->template}
-            {include "$group->template", group => $group, controls => $controls, form => $form, _form => $form}
+    {var $controls = $group->controls}
+    {if isset($group->template) && $group->template}
+    {include "$group->template", group => $group, controls => $controls, form => $form, _form => $form}
+
+    {else}
+    {block #controls}
+    {foreach $controls as $control}
+    {if $renderer->isSubmitButton($control)}
+    <div class="form-group">
+        <div class="col-lg-offset-2 col-lg-6">
+            {$renderer::mergeAttrs($control->getControl(), ['class' => 'form-control btn-primary'])}
+        </div>
+    </div>
+
+    {?continue}
+    {/if}
+    {* Common attributes for all controls *}
+    {var $attrs = ['input' => ['class' => 'form-control'], 'label' => ['class' => 'col-lg-2 control-label']]}
+    {if $control->control->type == 'file'}
+    {var $attrs['input']['class'] = ''}
+    {/if}
+
+    {block #control}
+    <div{!$control->getOption('pairContainer')->attributes()} n:tag-if="$control->getOption('pairContainer')">
+        {var
+        $name = $renderer->getControlName($control),
+        $description = $renderer->getControlDescription($control),
+        $error = $renderer->getControlError($control),
+        $groupClass = 'form-group' . (($error != '') ? ' has-error' : '')
+        }
+
+        {if $controlTemplate = $renderer->getControlTemplate($control)}
+        {include "$controlTemplate", name => $name, description => $description, error => $error, form => $form, _form => $form, attrs => $attrs}
+
+        {elseif $renderer->isSubmitButton($control)}
+        <div class="{$groupClass}">
+            <div class="col-lg-offset-2 col-lg-6">
+                {$renderer::mergeAttrs($form[$name]->getControl(), $attrs['input'])}
+            </div>
+        </div>
+
+
+        {elseif $renderer->isButton($control)}
+
+        <div class="controls">
+            {$renderer::mergeAttrs($form[$name]->getControl(), $attrs['input'])}{$error}{$description}
+        </div>
+
+        {elseif $renderer->isCheckbox($control)}
+
+        {var $label = $renderer::mergeAttrs($form[$name]->getLabel(), $attrs['label'])}
+        <div class="{$groupClass}">
+            <div class="col-lg-offset-2 col-lg-6">
+                <div class="checkbox">
+                    <label>{$renderer::mergeAttrs($form[$name]->getControl(), $attrs['input'])}{$renderer->getLabelBody($control)}</label>
+                    {if $description != ''}<span  class="help-block">{$description}</span>{/if}
+                    {if $error != ''}<div class="alert alert-danger">{$error}</div>{/if}
+                </div>
+            </div>
+        </div>
+        {elseif $renderer->isRadioList($control)}
+        {$renderer::mergeAttrs($form[$name]->getLabel(), $attrs['label'])}
+
+        <div class="col-lg-6">
+            {foreach $renderer->getRadioListItems($control) as $item}
+            <div class="radio">
+                <label>{$renderer::mergeAttrs($item->input, $attrs['input'])}{$item->label}</label>
+            </div>
+            {/foreach}
+            {if $description != ''}<span class="help-block">{$description}</span>{/if}
+            {if $error != ''}<div class="alert alert-danger">{$error}</div>{/if}
+        </div>
+
+        {elseif $renderer->isCheckboxList($control)}
+
+        {$renderer::mergeAttrs($form[$name]->getLabel()->addClass("control-label"), $attrs['label'])}
+
+        <div class="controls">
+            {foreach $renderer->getCheckboxListItems($control) as $item}
+
+            {$renderer::mergeAttrs($item->html, $attrs['input'])}
+            {/foreach}{$error}{$description}
+        </div>
 
         {else}
-            {block #controls}
-            {foreach $controls as $control}
-            {if $renderer->isSubmitButton($control)}
-                <div class="form-group">
-                    <div class="col-lg-offset-2 col-lg-6">
-                        {$renderer::mergeAttrs($control->getControl(), ['class' => 'form-control btn-primary'])}
-                    </div>
-                </div>
-                
-                {?continue}
-            {/if}
-            {* Common attributes for all controls *}
-            {var $attrs = ['input' => ['class' => 'form-control'], 'label' => ['class' => 'col-lg-2 control-label']]}
-            {if $control->control->type == 'file'}
-                {var $attrs['input']['class'] = ''}
-            {/if}
-
-            {block #control}
-            <div{!$control->getOption('pairContainer')->attributes()} n:tag-if="$control->getOption('pairContainer')">
-                {var
-                    $name = $renderer->getControlName($control),
-                    $description = $renderer->getControlDescription($control),
-                    $error = $renderer->getControlError($control)
-                }
-
-                {if $controlTemplate = $renderer->getControlTemplate($control)}
-                    {include "$controlTemplate", name => $name, description => $description, error => $error, form => $form, _form => $form, attrs => $attrs}
-
-                {elseif $renderer->isSubmitButton($control)}
-                    <div class="form-group">
-                        <div class="col-lg-offset-2 col-lg-6">
-                            {$renderer::mergeAttrs($form[$name]->getControl(), $attrs['input'])}
-                        </div>
-                    </div>
-                    
-
-                {elseif $renderer->isButton($control)}
-
-                    <div class="controls">
-                        {$renderer::mergeAttrs($form[$name]->getControl(), $attrs['input'])}{$error != ''}{$description}
-                    </div>
-
-                {elseif $renderer->isCheckbox($control)}
-
-                    {var $label = $renderer::mergeAttrs($form[$name]->getLabel(), $attrs['label'])}
-                    <div class="form-group">
-                        <div class="col-lg-offset-2 col-lg-6">
-                            <div class="checkbox">
-                                <label>{$renderer::mergeAttrs($form[$name]->getControl(), $attrs['input'])}{$renderer->getLabelBody($control)}</label>
-                                {if $description != ''}<span  class="help-block">{$description}</span>{/if}
-                                {if $error != ''}<span >{$error != ''}</span>{* TODO class *}{/if}
-                            </div>
-                        </div>
-                    </div>
-                {elseif $renderer->isRadioList($control)}
-                    {$renderer::mergeAttrs($form[$name]->getLabel(), $attrs['label'])}
-
-                    <div class="col-lg-6">
-                        {foreach $renderer->getRadioListItems($control) as $item}
-                        <div class="radio">
-                            <label>{$renderer::mergeAttrs($item->input, $attrs['input'])}{$item->label}</label>
-                        </div>
-                        {/foreach}
-                        {if $description != ''}<span class="help-block">{$description}</span>{/if}
-                        {if $error != ''}<span >{$error != ''}</span>{* TODO class *}{/if}
-                    </div>
-
-                {elseif $renderer->isCheckboxList($control)}
-
-                    {$renderer::mergeAttrs($form[$name]->getLabel()->addClass("control-label"), $attrs['label'])}
-
-                    <div class="controls">
-                        {foreach $renderer->getCheckboxListItems($control) as $item}
-
-                            {$renderer::mergeAttrs($item->html, $attrs['input'])}
-                        {/foreach}{$error != ''}{$description}
-                    </div>
-
-                {else}
-                    <div class="form-group">
-                        {$renderer::mergeAttrs($form[$name]->getLabel(), $attrs['label'])}    
-                        <div class="col-lg-6">
-                            {$renderer::mergeAttrs($form[$name]->getControl(), $attrs['input'])}
-                            {if $description != ''}<span class="help-block">{$description}</span>{/if}
-                            {if $error != ''}<span >{$error != ''}</span>{* TODO class *}{/if}
-                        </div>
-
-                     </div>
-                {/if}
+        <div class="form-group{if $error != ''} has-error{/if}">
+            {$renderer::mergeAttrs($form[$name]->getLabel(), $attrs['label'])}    
+            <div class="col-lg-6">
+                {$renderer::mergeAttrs($form[$name]->getControl(), $attrs['input'])}
+                {if $description != ''}<span class="help-block">{$description}</span>{/if}
+                {if $error != ''}<div class="alert alert-danger">{$error}</div>{/if}
             </div>
-            {/block}
 
-            {/foreach}
-            {/block}
-
+        </div>
         {/if}
-    </fieldset>
+    </div>
+    {/block}
+
+    {/foreach}
+    {/block}
+
+    {/if}
+</fieldset>
 {/block}{/foreach}
 
 {* controls without group *}
@@ -133,5 +134,5 @@
 {/define}
 
 {if !isset($mode)}
-    {include #form, form => $form, renderer => $renderer}
+{include #form, form => $form, renderer => $renderer}
 {/if}
