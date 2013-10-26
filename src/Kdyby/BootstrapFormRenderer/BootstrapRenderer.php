@@ -27,6 +27,7 @@ use Nette\Utils\Html;
  *
  * @author Pavel Ptacek
  * @author Filip Procházka
+ * @author Michal Koutný <michal@fykos.cz>  Ported to Bootstrap 3.0.
  */
 class BootstrapRenderer extends Nette\Object implements Nette\Forms\IFormRenderer
 {
@@ -523,9 +524,6 @@ class BootstrapRenderer extends Nette\Object implements Nette\Forms\IFormRendere
 				);
 			}
 
-			$radio->label->addClass('radio');
-			$radio->html = clone $radio->label;
-			$radio->html->insert(0, $radio->input);
 		}
 
 		return $items;
