@@ -10,8 +10,8 @@
 {form $form}
 {block #errors}
 
-<div n:foreach="$renderer->findErrors() as $error" class="alert alert-error">
-    <a class="close" data-dismiss="alert">×</a>{$error}
+<div n:foreach="$renderer->findErrors() as $error" class="alert alert-danger">
+    {$error}
 </div>
 {/block}
 {block #body}
