@@ -31,7 +31,7 @@
     {foreach $controls as $control}
     {if $renderer->isSubmitButton($control)}
     <div class="form-group">
-        <div class="col-lg-offset-2 col-lg-6">
+        <div class="col-lg-offset-{$colLeft} col-lg-{$colRight}">
             {$renderer::mergeAttrs($control->getControl(), ['class' => 'form-control btn-primary'])}
         </div>
     </div>
@@ -39,7 +39,7 @@
     {?continue}
     {/if}
     {* Common attributes for all controls *}
-    {var $attrs = ['input' => ['class' => 'form-control'], 'label' => ['class' => 'col-lg-2 control-label']]}
+    {var $attrs = ['input' => ['class' => 'form-control'], 'label' => ['class' => 'col-lg-'.$colLeft.' control-label']]}
     {if $control->control->type == 'file'}
     {var $attrs['input']['class'] = ''}
     {/if}
@@ -58,7 +58,7 @@
 
         {elseif $renderer->isSubmitButton($control)}
         <div class="{$groupClass}">
-            <div class="col-lg-offset-2 col-lg-6">
+            <div class="col-lg-offset-{$colLeft} col-lg-{$colRight}">
                 {$renderer::mergeAttrs($form[$name]->getControl(), $attrs['input'])}
             </div>
         </div>
@@ -74,7 +74,7 @@
 
         {var $label = $renderer::mergeAttrs($form[$name]->getLabel(), $attrs['label'])}
         <div class="{$groupClass}">
-            <div class="col-lg-offset-2 col-lg-6">
+            <div class="col-lg-offset-{$colLeft} col-lg-{$colRight}">
                 <div class="checkbox">
                     <label>{$renderer::mergeAttrs($form[$name]->getControl(), $attrs['input'])}{$renderer->getLabelBody($control)}</label>
                     {if $description != ''}<span  class="help-block">{$description}</span>{/if}
@@ -85,7 +85,7 @@
         {elseif $renderer->isRadioList($control)}
         {$renderer::mergeAttrs($form[$name]->getLabel(), $attrs['label'])}
 
-        <div class="col-lg-6">
+        <div class="col-lg-{$colRight}">
             {foreach $renderer->getRadioListItems($control) as $item}
             <div class="radio">
                 <label>{$renderer::mergeAttrs($item->input, $attrs['input'])}{$item->label}</label>
@@ -109,7 +109,7 @@
         {else}
         <div class="form-group{if $error != ''} has-error{/if}">
             {$renderer::mergeAttrs($form[$name]->getLabel(), $attrs['label'])}    
-            <div class="col-lg-6">
+            <div class="col-lg-{$colRight}">
                 {$renderer::mergeAttrs($form[$name]->getControl(), $attrs['input'])}
                 {if $description != ''}<span class="help-block">{$description}</span>{/if}
                 {if $error != ''}<div class="alert alert-danger">{$error}</div>{/if}
