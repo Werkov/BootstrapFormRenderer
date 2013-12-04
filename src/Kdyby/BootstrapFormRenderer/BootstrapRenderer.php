@@ -30,6 +30,9 @@ use Nette\Utils\Html;
  */
 class BootstrapRenderer extends Nette\Object implements Nette\Forms\IFormRenderer {
 
+    /** @const Suffix to form whole group ID from element ID */
+    const PAIR_ID_SUFFIX = '-pair';
+
     /**
      * set to false, if you want to display the field errors also as form errors
      * @var bool
@@ -197,7 +200,7 @@ class BootstrapRenderer extends Nette\Object implements Nette\Forms\IFormRendere
             }
 
             $control->setOption('pairContainer', $pair = Html::el('div'));
-            $pair->id = $control->htmlId . '-pair';
+            $pair->id = $control->htmlId . self::PAIR_ID_SUFFIX;
             $pair->addClass('control-group');
             if ($control->getOption('required', FALSE)) {
                 $pair->addClass('required');
