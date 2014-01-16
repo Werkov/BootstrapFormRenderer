@@ -16,11 +16,11 @@
 {/block}
 {block #body}
 {* controls with group *}
-{foreach $renderer->findGroups() as $group}{block #group}
-
-<fieldset{!$group->attrs->attributes()}>
+{define #group}
+<div n:tag-if="$group->level > 1" class="row">
+<div n:tag-if="$group->level > 1" class="well well-sm col-lg-{$subWidth} col-lg-offset-{$subOffset}"  ><fieldset n:tag-if="!$group->root" {!$group->attrs->attributes()}>
     <legend n:if="$group->label">{$group->label}</legend>
-    <p n:if="$group->description">{$group->description != ''}</p>
+    <p n:if="$group->description">{$group->description}</p>
 
     {var $controls = $group->controls}
     {if isset($group->template) && $group->template}
@@ -28,7 +28,15 @@
 
     {else}
     {block #controls}
+    {var
+    $colLeft = isset($group) && $group->level == 2 ? $subColLeft : $colLeft,
+    $colRight = isset($group) && $group->level == 2 ? $subColRight : $colRight
+    }
     {foreach $controls as $control}
+    {if $control instanceof stdClass}
+        {include #group, group => $control}
+    {?continue}
+    {/if}
     {if $renderer->isSubmitButton($control)}
     <div class="form-group">
         <div class="col-lg-offset-{$colLeft} col-lg-{$colRight}">
@@ -118,18 +126,26 @@
         </div>
         {/if}
     </div>
-    {/block}
+    {/block} {*#control *}
 
     {/foreach}
-    {/block}
+    {/block} {*controls*}
 
     {/if}
-</fieldset>
-{/block}{/foreach}
-
+</fieldset></div></div>
+{/define}{* group *}
 {* controls without group *}
-{include #controls, controls => $renderer->findControls()}
-{/block}
+
+{* TODO normal rendering *}
+{if $renderer->getGroupLevel() == 0}
+    {foreach $renderer->findGroups() as $group }
+    {include #group, group => $group}
+    {/foreach}
+    {include #controls, controls => $renderer->findControls()}
+{else}
+    {include #group, group => $renderer->groupsFromContainers()}
+{/if}
+{/block}{* body *}
 {/form}
 {/define}
 
