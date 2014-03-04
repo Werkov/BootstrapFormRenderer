@@ -93,14 +93,16 @@
         {elseif $renderer->isRadioList($control)}
         {$renderer::mergeAttrs($form[$name]->getLabel(), $attrs['label'])}
 
-        <div class="col-lg-{$colRight}">
-            {foreach $renderer->getRadioListItems($control) as $item}
-            <div class="radio">
-                <label>{$renderer::mergeAttrs($item->input, $attrs['input'])}{$item->label}</label>
+        <div class="{$groupClass}">
+            <div class="col-lg-{$colRight}">
+                {foreach $renderer->getRadioListItems($control) as $item}
+                <div class="radio">
+                    <label>{$renderer::mergeAttrs($item->input, $attrs['input'])}{$item->label}</label>
+                </div>
+                {/foreach}
+                {if $description != ''}<span class="help-block">{$description}</span>{/if}
+                {if $error != ''}<div class="alert alert-danger">{$error}</div>{/if}
             </div>
-            {/foreach}
-            {if $description != ''}<span class="help-block">{$description}</span>{/if}
-            {if $error != ''}<div class="alert alert-danger">{$error}</div>{/if}
         </div>
 
         {elseif $renderer->isCheckboxList($control)}
