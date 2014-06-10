@@ -84,7 +84,7 @@
         <div class="{$groupClass}">
             <div class="col-lg-offset-{$colLeft} col-lg-{$colRight}">
                 <div class="checkbox">
-                    <label>{$renderer::mergeAttrs($form[$name]->getControl(), $attrs['input'])}{$renderer->getLabelBody($control)}</label>
+                    <label>{$form[$name]->getControl()}{$renderer->getLabelBody($control)}</label>
                     {if $description != ''}<span  class="help-block">{$description}</span>{/if}
                     {if $error != ''}<div class="alert alert-danger">{$error}</div>{/if}
                 </div>
@@ -97,7 +97,7 @@
             <div class="col-lg-{$colRight}">
                 {foreach $renderer->getRadioListItems($control) as $item}
                 <div class="radio">
-                    <label>{$renderer::mergeAttrs($item->input, $attrs['input'])}{$item->label}</label>
+                    <label>{$item->input}{$item->label}</label>
                 </div>
                 {/foreach}
                 {if $description != ''}<span class="help-block">{$description}</span>{/if}
