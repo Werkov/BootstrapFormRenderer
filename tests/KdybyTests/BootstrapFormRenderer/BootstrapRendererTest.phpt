@@ -4,6 +4,10 @@
  * Test: Kdyby\BootstrapFormRenderer\BootstrapRenderer.
  *
  * @testCase KdybyTests\BootstrapFormRenderer\BootstrapRendererTest
+ *
+ * Nette Tester can't detect output of such nested test, so skip it
+ * @skip
+ *
  * @author Filip Procházka <filip@prochazka.su>
  * @package Kdyby\BootstrapFormRenderer
  */
